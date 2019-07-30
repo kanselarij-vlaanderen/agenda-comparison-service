@@ -16,7 +16,7 @@ const getLastPriorityOfAgendaitemInAgenda = async (agendaId) => {
     PREFIX mandaat: <http://data.vlaanderen.be/ns/mandaat#>
     PREFIX dct: <http://purl.org/dc/terms/>
 
- 	SELECT MAX(?agendaitemPrio) AS ?maxPrio  WHERE {
+ 	SELECT (MAX(?agendaitemPrio) AS ?maxPrio)  WHERE {
   	GRAPH <${targetGraph}> {
    		?agenda a besluitvorming:Agenda ;
    		mu:uuid "${agendaId}" .
@@ -41,7 +41,7 @@ const getAgendaPriorities = async (agendaId) => {
       PREFIX mandaat: <http://data.vlaanderen.be/ns/mandaat#>
       PREFIX dct: <http://purl.org/dc/terms/>
       
-      SELECT ?uuid ?agendapunt MIN(?priority) AS ?priority COUNT(DISTINCT(?mandatee)) AS ?mandateeCount
+      SELECT ?uuid ?agendapunt (MIN(?priority) AS ?priority) (COUNT(DISTINCT(?mandatee)) AS ?mandateeCount)
         WHERE { 
           GRAPH <${targetGraph}>
           {
@@ -86,7 +86,7 @@ const getAgendaPrioritiesWithoutFilter = async (agendaId) => {
       PREFIX mandaat: <http://data.vlaanderen.be/ns/mandaat#>
       PREFIX dct: <http://purl.org/dc/terms/>
       
-      SELECT ?uuid ?agendapunt ?subcaseId MIN(?priority) AS ?priority COUNT(DISTINCT(?mandatee)) AS ?mandateeCount
+      SELECT ?uuid ?agendapunt ?subcaseId (MIN(?priority) AS ?priority) (COUNT(DISTINCT(?mandatee)) AS ?mandateeCount)
         WHERE { 
           GRAPH <${targetGraph}>
           {
