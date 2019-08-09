@@ -1,6 +1,5 @@
 {
   "name": "agenda-sort-service",
-
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
@@ -9,8 +8,7 @@
     "express": "^4.16.4",
     "moment": "^2.23.0",
     "cors": "^2.8.5",
-    "node-fetch": "^2.3.0",
-    "@lblod/mu-auth-sudo": "^0.2.0"
+    "node-fetch": "^2.3.0"
   },
   "devDependencies": {},
   "scripts": {

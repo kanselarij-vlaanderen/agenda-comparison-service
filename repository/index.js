@@ -1,7 +1,4 @@
 import mu from 'mu';
-import { querySudo, updateSudo } from '@lblod/mu-auth-sudo';
-mu.query = querySudo;
-mu.update = updateSudo;
 const targetGraph = "http://mu.semte.ch/graphs/organizations/kanselarij";
 
 const getLastPriorityOfAgendaitemInAgenda = async (agendaId) => {
