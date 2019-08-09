@@ -2,10 +2,10 @@ import mu from 'mu';
 import { querySudo, updateSudo } from '@lblod/mu-auth-sudo';
 mu.query = querySudo;
 mu.update = updateSudo;
-const targetGraph = "http://mu.semte.ch/graphs/organizations/kanselarij";
+const targetGraph = 'http://mu.semte.ch/graphs/organizations/kanselarij';
 
 const getLastPriorityOfAgendaitemInAgenda = async (agendaId) => {
-    const query = `
+  const query = `
     PREFIX vo-org: <https://data.vlaanderen.be/ns/organisatie#>
     PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
     PREFIX vo-gen: <https://data.vlaanderen.be/ns/generiek#> 
@@ -25,12 +25,12 @@ const getLastPriorityOfAgendaitemInAgenda = async (agendaId) => {
   	  }
      }`;
 
-    let data = await mu.query(query);
-    return parseSparqlResults(data);
-}
+  let data = await mu.query(query);
+  return parseSparqlResults(data);
+};
 
 const getAgendaPriorities = async (agendaId) => {
-    const query = `
+  const query = `
       PREFIX vo-org: <https://data.vlaanderen.be/ns/organisatie#>
       PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
       PREFIX vo-gen: <https://data.vlaanderen.be/ns/generiek#> 
@@ -69,13 +69,13 @@ const getAgendaPriorities = async (agendaId) => {
            }
       } GROUP BY ?uuid ?agendapunt`;
 
-    let data = await mu.query(query);
-    const results = parseSparqlResults(data);
-    return parsePriorityResults(results);
-}
+  let data = await mu.query(query);
+  const results = parseSparqlResults(data);
+  return parsePriorityResults(results);
+};
 
 const getAgendaPrioritiesWithoutFilter = async (agendaId) => {
-    const query = `
+  const query = `
       PREFIX vo-org: <https://data.vlaanderen.be/ns/organisatie#>
       PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
       PREFIX vo-gen: <https://data.vlaanderen.be/ns/generiek#> 
@@ -114,28 +114,27 @@ const getAgendaPrioritiesWithoutFilter = async (agendaId) => {
            }
       } GROUP BY ?uuid ?agendapunt ?subcaseId`;
 
-    let data = await mu.query(query);
-    const results = parseSparqlResults(data);
-    return parsePriorityResults(results);
-}
+  let data = await mu.query(query);
+  const results = parseSparqlResults(data);
+  return parsePriorityResults(results);
+};
 
 const updateAgendaItemPriority = async (items) => {
+  const oldPriorities = items.map((item) => {
+    return ` <${item.uri}> ext:prioriteit ${item.priority} .`;
+  });
 
-    const oldPriorities = items.map(item => {
-        return ` <${item.uri}> ext:prioriteit ${item.priority} .`;
-    });
-
-    const newPriorities = items.map(item => {
-        if (!item.agendaitemPrio) {
-            return ` <${item.uri}> ext:prioriteit ${item.priority} .`;
-        }
-    });
-
-    if (newPriorities.length < 1) {
-        return;
+  const newPriorities = items.map((item) => {
+    if (!item.agendaitemPrio) {
+      return ` <${item.uri}> ext:prioriteit ${item.priority} .`;
     }
+  });
 
-    const query = `
+  if (newPriorities.length < 1) {
+    return;
+  }
+
+  const query = `
       PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
       
       DELETE WHERE { 
@@ -150,46 +149,50 @@ const updateAgendaItemPriority = async (items) => {
         } 
       }`;
 
-    return mu.update(query);
+  return mu.update(query);
 };
 
 const parseSparqlResults = (data) => {
-    const vars = data.head.vars;
-    return data.results.bindings.map(binding => {
-        let obj = {};
-        vars.forEach(varKey => {
-            if (binding[varKey]) {
-                obj[varKey] = binding[varKey].value;
-            }
-        });
-        return obj;
-    })
+  if (!data) return;
+  const vars = data.head.vars;
+  return data.results.bindings.map((binding) => {
+    let obj = {};
+    vars.forEach((varKey) => {
+      if (binding[varKey]) {
+        obj[varKey] = binding[varKey].value;
+      }
+    });
+    return obj;
+  });
 };
 
 const parsePriorityResults = (items) => {
-    let agendaItems = {};
+  let agendaItems = {};
 
-    items.map((agendaItem) => {
-        const uuid = agendaItem.uuid;
-        agendaItem.priority = agendaItem.priority || Number.MAX_SAFE_INTEGER;
-        if (agendaItems[uuid]) {
-            agendaItems[uuid].mandatePriority = Math.min(agendaItems[uuid].mandatePriority, agendaItem.priority);
-        } else {
-            agendaItems[uuid] = {
-                uuid: uuid,
-                uri: agendaItem.agendapunt,
-                agendaitemPrio: agendaItem.agendaitemPrio,
-                subcaseId: agendaItem.subcaseId,
-                mandatePriority: agendaItem.priority,
-                mandateeCount: agendaItem.mandateeCount
-            }
-        }
-    });
-    return Object.values(agendaItems);
+  items.map((agendaItem) => {
+    const uuid = agendaItem.uuid;
+    agendaItem.priority = agendaItem.priority || Number.MAX_SAFE_INTEGER;
+    if (agendaItems[uuid]) {
+      agendaItems[uuid].mandatePriority = Math.min(
+        agendaItems[uuid].mandatePriority,
+        agendaItem.priority
+      );
+    } else {
+      agendaItems[uuid] = {
+        uuid: uuid,
+        uri: agendaItem.agendapunt,
+        agendaitemPrio: agendaItem.agendaitemPrio,
+        subcaseId: agendaItem.subcaseId,
+        mandatePriority: agendaItem.priority,
+        mandateeCount: agendaItem.mandateeCount,
+      };
+    }
+  });
+  return Object.values(agendaItems);
 };
 
 const getAllAgendaitemsOfTheSessionWithAgendaName = async (sessionId) => {
-    const query = `
+  const query = `
     PREFIX vo-org: <https://data.vlaanderen.be/ns/organisatie#>
     PREFIX besluit: <http://data.vlaanderen.be/ns/besluit#>
     PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
@@ -231,14 +234,48 @@ const getAllAgendaitemsOfTheSessionWithAgendaName = async (sessionId) => {
          }
        }  GROUP BY ?agendaName ?subcaseId ?subcase ?title ?agendaId ?priority ?agendaitemPrio
        ORDER BY ASC(UCASE(str(?agendaName)))
-    `
+    `;
 
-    const data = await mu.query(query);
-    return parseSparqlResults(data);
-}
+  const data = await mu.query(query);
+  return parseSparqlResults(data);
+};
+
+const getAllAgendaItemsFromAgendaWithDocuments = async (agendaId) => {
+  const query = `
+    PREFIX vo-org: <https://data.vlaanderen.be/ns/organisatie#>
+    PREFIX besluit: <http://data.vlaanderen.be/ns/besluit#>
+    PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
+    PREFIX vo-gen: <https://data.vlaanderen.be/ns/generiek#> 
+    PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
+    PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+    PREFIX besluitvorming: <http://data.vlaanderen.be/ns/besluitvorming#>
+    PREFIX agenda: <http://data.lblod.info/id/agendas/>
+    PREFIX mandaat: <http://data.vlaanderen.be/ns/mandaat#>
+    PREFIX dct: <http://purl.org/dc/terms/>
+   
+    SELECT ?subcaseId ?id ?documentVersions ?document  WHERE { 
+       GRAPH <${targetGraph}>
+       {
+         ?agenda a besluitvorming:Agenda ;
+                    mu:uuid "${agendaId}" .
+         ?agenda   ext:agendaNaam ?agendaName .
+         ?agenda   dct:hasPart ?agendaitem .
+         ?agendaitem mu:uuid ?id .
+         OPTIONAL   { ?agendaitem ext:prioriteit ?agendaitemPrio . }
+         ?subcase   besluitvorming:isGeagendeerdVia ?agendaitem .
+         ?subcase   mu:uuid ?subcaseId .
+         ?agendaitem ext:wordtGetoondAlsMededeling ?showAsRemark .
+         OPTIONAL   { ?agendaitem ext:bevatAgendapuntDocumentversie ?documentVersions .
+                      ?document  besluitvorming:heeftVersie ?documentVersions .}
+         FILTER(?showAsRemark ="false"^^<http://mu.semte.ch/vocabularies/typed-literals/boolean>)
+        }
+    }`;
+  const data = await mu.query(query);
+  return parseSparqlResults(data);
+};
 
 const getAllAgendaItemsFromAgenda = async (agendaId) => {
-    const query = `
+  const query = `
     PREFIX vo-org: <https://data.vlaanderen.be/ns/organisatie#>
     PREFIX besluit: <http://data.vlaanderen.be/ns/besluit#>
     PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
@@ -268,15 +305,16 @@ const getAllAgendaItemsFromAgenda = async (agendaId) => {
     }
     `;
 
-    const data = await mu.query(query);
-    return parseSparqlResults(data);
-}
+  const data = await mu.query(query);
+  return parseSparqlResults(data);
+};
 
 module.exports = {
-    getAgendaPriorities,
-    updateAgendaItemPriority,
-    getLastPriorityOfAgendaitemInAgenda,
-    getAllAgendaItemsFromAgenda,
-    getAgendaPrioritiesWithoutFilter,
-    getAllAgendaitemsOfTheSessionWithAgendaName
+  getAgendaPriorities,
+  updateAgendaItemPriority,
+  getLastPriorityOfAgendaitemInAgenda,
+  getAllAgendaItemsFromAgenda,
+  getAgendaPrioritiesWithoutFilter,
+  getAllAgendaitemsOfTheSessionWithAgendaName,
+  getAllAgendaItemsFromAgendaWithDocuments,
 };
