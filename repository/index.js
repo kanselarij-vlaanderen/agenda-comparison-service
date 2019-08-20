@@ -1,5 +1,4 @@
 import mu from 'mu';
-mu.update = updateSudo;
 const targetGraph = 'http://mu.semte.ch/graphs/organizations/kanselarij';
 
 const getLastPriorityOfAgendaitemInAgenda = async (agendaId) => {
