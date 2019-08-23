@@ -219,8 +219,11 @@ const getAllAgendaitemsOfTheSessionWithAgendaName = async (sessionId) => {
             OPTIONAL { 
                 ?subcase besluitvorming:heeftBevoegde ?mandatee . 
                 ?mandatee mu:uuid ?mandateeId .
-                ?mandatee dct:title ?title .
-                ?mandatee mandaat:rangorde ?priority .
+                OPTIONAL { ?mandatee dct:title ?title . }
+                OPTIONAL { 
+                  ?mandatee mandaat:rangorde ?prio . 
+                }
+                BIND ( IF (BOUND (?prio), ?prio, 0)  as ?priority )
                 ?mandatee mandaat:start ?start .
                 FILTER(?start < NOW())
                 OPTIONAL {
