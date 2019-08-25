@@ -163,10 +163,17 @@ const reduceAgendaitemsPerTitle = (agendaitems) => {
       mandatees: agendaitem.mandatees,
     };
     agendaItems[agendaitem.groupTitle].agendaitems.push(agendaitem);
-    agendaItems[agendaitem.groupTitle].foundPriority = Math.min(
-      agendaItems[agendaitem.groupTitle].foundPriority,
-      agendaitem.groupPriority
-    );
+    if (parseInt(agendaitem.groupPriority) != 0) {
+      agendaItems[agendaitem.groupTitle].foundPriority = Math.min(
+        agendaItems[agendaitem.groupTitle].foundPriority,
+        agendaitem.groupPriority
+      );
+    } else {
+      agendaItems[agendaitem.groupTitle].foundPriority = Math.min(
+        parseInt(agendaItems[agendaitem.groupTitle].foundPriority),
+        parseInt(agendaitem.agendaitemPrio)
+      );
+    }
 
     return agendaItems;
   }, {});
@@ -283,6 +290,7 @@ const setGroupTitlesAndPriorityOfMandatees = (uniqueMandatees, agendaitem) => {
   agendaitem['groupTitle'] = titles.join(', ');
   const priorities = uniqueMandatees.map((item) => parseInt(item.priority));
   let minPriority = Math.min(...priorities);
+
   // create a priority based on the multiple priorities in the mandatee list
   if (priorities.length > 1) {
     priorities.map((priority) => {
