@@ -208,12 +208,15 @@ const getAllAgendaItemsFromAgendaWithDocuments = async (agendaId) => {
          ?agenda   ext:agendaNaam ?agendaName .
          ?agenda   dct:hasPart ?agendaitem .
          ?agendaitem mu:uuid ?id .
-         OPTIONAL   { ?agendaitem ext:prioriteit ?agendaitemPrio . }
-         ?subcase   besluitvorming:isGeagendeerdVia ?agendaitem .
-         ?subcase   mu:uuid ?subcaseId .
-         ?agendaitem ext:wordtGetoondAlsMededeling ?showAsRemark .
-         OPTIONAL   { ?agendaitem ext:bevatAgendapuntDocumentversie ?documentVersions .
-                      ?document  besluitvorming:heeftVersie ?documentVersions .}
+         OPTIONAL { 
+            ?subcase    besluitvorming:isGeagendeerdVia ?agendaitem ;
+                        mu:uuid ?subcaseId .
+         }
+         ?agendaitem   ext:wordtGetoondAlsMededeling ?showAsRemark .
+         OPTIONAL { 
+            ?agendaitem ext:bevatAgendapuntDocumentversie ?documentVersions .
+            ?document   besluitvorming:heeftVersie ?documentVersions .
+         }
          FILTER(?showAsRemark ="false"^^<http://mu.semte.ch/vocabularies/typed-literals/boolean>)
         }
     }`;
