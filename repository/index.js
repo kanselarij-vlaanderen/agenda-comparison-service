@@ -93,7 +93,6 @@ const getAgendaPrioritiesWithoutFilter = async (agendaId) => {
             ?subcase besluitvorming:isGeagendeerdVia ?agendapunt .
             ?subcase mu:uuid ?subcaseId .
             ?subcase ext:wordtGetoondAlsMededeling ?showAsRemark .
-
             FILTER(?showAsRemark ="false"^^<http://mu.semte.ch/vocabularies/typed-literals/boolean>)
 
             OPTIONAL { 
@@ -188,58 +187,6 @@ const parsePriorityResults = (items) => {
   return Object.values(agendaItems);
 };
 
-const getAllAgendaitemsOfTheSessionWithAgendaName = async (sessionId) => {
-  const query = `
-    PREFIX vo-org: <https://data.vlaanderen.be/ns/organisatie#>
-    PREFIX besluit: <http://data.vlaanderen.be/ns/besluit#>
-    PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
-    PREFIX vo-gen: <https://data.vlaanderen.be/ns/generiek#> 
-    PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
-    PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-    PREFIX besluitvorming: <http://data.vlaanderen.be/ns/besluitvorming#>
-    PREFIX agenda: <http://data.lblod.info/id/agendas/>
-    PREFIX mandaat: <http://data.vlaanderen.be/ns/mandaat#>
-    PREFIX dct: <http://purl.org/dc/terms/>
-       
-    SELECT ?subcaseId ?agendaId ?agendaName ?subcase ?title ?priority ?agendaitemPrio ?id WHERE { 
-           GRAPH <${targetGraph}>
-           {
-            ?meeting a  besluit:Zitting ;
-                        mu:uuid "${sessionId}" .
-            ?agendas    besluit:isAangemaaktVoor ?meeting .
-             ?agendas   ext:agendaNaam ?agendaName .
-             ?agendas   mu:uuid    ?agendaId .
-             ?agendas   dct:hasPart ?agendaitem .
-             ?agendaitem mu:uuid    ?id .
-             OPTIONAL   { ?agendaitem ext:prioriteit ?agendaitemPrio . }
-             ?subcase   besluitvorming:isGeagendeerdVia ?agendaitem .
-             ?subcase   mu:uuid ?subcaseId .
-             ?agendaitem ext:wordtGetoondAlsMededeling ?showAsRemark .
-             FILTER(?showAsRemark ="false"^^<http://mu.semte.ch/vocabularies/typed-literals/boolean>)
-            OPTIONAL { 
-                ?subcase besluitvorming:heeftBevoegde ?mandatee . 
-                ?mandatee mu:uuid ?mandateeId .
-                OPTIONAL { ?mandatee dct:title ?title . }
-                OPTIONAL { 
-                  ?mandatee mandaat:rangorde ?prio . 
-                }
-                BIND ( IF (BOUND (?prio), ?prio, 0)  as ?priority )
-                ?mandatee mandaat:start ?start .
-                FILTER(?start < NOW())
-                OPTIONAL {
-                   ?mandatee mandaat:eind ?end .
-                   FILTER(?end > NOW())
-                }
-            }
-         }
-       }  GROUP BY ?agendaName ?subcaseId ?subcase ?title ?agendaId ?priority ?agendaitemPrio
-       ORDER BY ASC(UCASE(str(?agendaName)))
-    `;
-
-  const data = await mu.query(query);
-  return parseSparqlResults(data);
-};
-
 const getAllAgendaItemsFromAgendaWithDocuments = async (agendaId) => {
   const query = `
     PREFIX vo-org: <https://data.vlaanderen.be/ns/organisatie#>
@@ -274,47 +221,10 @@ const getAllAgendaItemsFromAgendaWithDocuments = async (agendaId) => {
   return parseSparqlResults(data);
 };
 
-const getAllAgendaItemsFromAgenda = async (agendaId) => {
-  const query = `
-    PREFIX vo-org: <https://data.vlaanderen.be/ns/organisatie#>
-    PREFIX besluit: <http://data.vlaanderen.be/ns/besluit#>
-    PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
-    PREFIX vo-gen: <https://data.vlaanderen.be/ns/generiek#> 
-    PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
-    PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-    PREFIX besluitvorming: <http://data.vlaanderen.be/ns/besluitvorming#>
-    PREFIX agenda: <http://data.lblod.info/id/agendas/>
-    PREFIX mandaat: <http://data.vlaanderen.be/ns/mandaat#>
-    PREFIX dct: <http://purl.org/dc/terms/>
-   
-    SELECT ?subcaseId ?id   WHERE { 
-       GRAPH <${targetGraph}>
-       {
-         ?agenda a besluitvorming:Agenda ;
-                    mu:uuid "${agendaId}" .
-         ?agenda   ext:agendaNaam ?agendaName .
-         ?agenda   dct:hasPart ?agendaitem .
-         ?agendaitem mu:uuid ?id .
-         OPTIONAL   { ?agendaitem ext:prioriteit ?agendaitemPrio . }
-         ?subcase   besluitvorming:isGeagendeerdVia ?agendaitem .
-         ?subcase   mu:uuid ?subcaseId .
-         ?agendaitem ext:wordtGetoondAlsMededeling ?showAsRemark .
-
-         FILTER(?showAsRemark ="false"^^<http://mu.semte.ch/vocabularies/typed-literals/boolean>)
-        }
-    }
-    `;
-
-  const data = await mu.query(query);
-  return parseSparqlResults(data);
-};
-
 module.exports = {
   getAgendaPriorities,
   updateAgendaItemPriority,
   getLastPriorityOfAgendaitemInAgenda,
-  getAllAgendaItemsFromAgenda,
   getAgendaPrioritiesWithoutFilter,
-  getAllAgendaitemsOfTheSessionWithAgendaName,
   getAllAgendaItemsFromAgendaWithDocuments,
 };

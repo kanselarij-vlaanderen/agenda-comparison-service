@@ -13,31 +13,8 @@ app.post('/', (req, res) => {
   return handleSortRequest(req, res);
 });
 
-app.get('/', (req, res) => {
-  return handleSortRequest(req, res, true, false);
-});
-
 app.get('/compared-sort', (req, res) => {
   return handleSortRequest(req, res, true, true);
-});
-
-app.get('/sortedAgenda', async (req, res) => {
-  const sessionId = req.query.sessionId;
-  const currentAgendaID = req.query.selectedAgenda;
-  const agendaitemsOfSelectedAgenda = await repository.getAllAgendaItemsFromAgenda(currentAgendaID);
-
-  const agendaitems = await repository.getAllAgendaitemsOfTheSessionWithAgendaName(sessionId);
-
-  const changedAgendaItems = await setAllMappedPropertiesAndReturnSortedAgendaitems(
-    agendaitems,
-    agendaitemsOfSelectedAgenda,
-    currentAgendaID
-  );
-
-  const combinedAgendas = await reduceAgendaitemsToUniqueAgendas(changedAgendaItems);
-  const combinedAgendasWithAgendaitems = await getGroupedAgendaitems(combinedAgendas);
-
-  res.send(combinedAgendasWithAgendaitems);
 });
 
 app.get('/agenda-with-changes', async (req, res) => {
@@ -123,7 +100,6 @@ const sortAgendaItemsByMandates = async (agendaItems, previousPrio) => {
   for (let i = 0; i < agendaItems.length; i++) {
     agendaItems[i].priority = i + 1 + parseInt(previousPrio);
   }
-
   return agendaItems;
 };
 
@@ -153,151 +129,4 @@ const reduceDocumentsAndDocumentVersions = (agendaitems) => {
 
     return agendaItems;
   }, []);
-};
-
-const reduceAgendaitemsPerTitle = (agendaitems) => {
-  return agendaitems.reduce((agendaItems, agendaitem) => {
-    agendaItems[agendaitem.groupTitle] = agendaItems[agendaitem.groupTitle] || {
-      agendaitems: [],
-      foundPriority: 2147111111,
-      mandatees: agendaitem.mandatees,
-    };
-    agendaItems[agendaitem.groupTitle].agendaitems.push(agendaitem);
-    if (parseInt(agendaitem.groupPriority) != 0) {
-      agendaItems[agendaitem.groupTitle].foundPriority = Math.min(
-        agendaItems[agendaitem.groupTitle].foundPriority,
-        agendaitem.groupPriority
-      );
-    } else {
-      agendaItems[agendaitem.groupTitle].foundPriority = Math.min(
-        parseInt(agendaItems[agendaitem.groupTitle].foundPriority),
-        parseInt(agendaitem.agendaitemPrio)
-      );
-    }
-
-    return agendaItems;
-  }, {});
-};
-
-const setAllMappedPropertiesAndReturnSortedAgendaitems = (
-  agendaitems,
-  agendaitemsOfSelectedAgenda,
-  currentAgendaID
-) => {
-  const mandatees = reduceMandateesToUniqueSubcases(agendaitems);
-
-  return agendaitems.map((agendaitem) => {
-    const uniqueMandatees = getUniqueMandatees(mandatees[agendaitem.subcaseId].mandatees);
-    setGroupTitlesAndPriorityOfMandatees(uniqueMandatees, agendaitem);
-
-    const foundAgendaItem = agendaitemsOfSelectedAgenda.find(
-      (agendaitemToCheck) => agendaitemToCheck.subcaseId === agendaitem.subcaseId
-    );
-    agendaitem['selectedAgendaId'] = currentAgendaID;
-
-    if (foundAgendaItem) {
-      agendaitem['id'] = foundAgendaItem.id;
-    }
-    agendaitem['foundPrio'] = agendaitem.agendaitemPrio;
-
-    return agendaitem;
-  });
-};
-
-const getGroupedAgendaitems = (combinedAgendas) => {
-  return Object.entries(combinedAgendas)
-    .map((itemArray) => {
-      if (itemArray[1].items.length > 0) {
-        let obj = {
-          agendaName: itemArray[0],
-          agendaId: itemArray[1].agendaId,
-          groups: createAgendaitemGroups(itemArray),
-        };
-
-        return obj;
-      }
-    })
-    .filter((item) => item)
-    .sort((a, b) => {
-      if (a.agendaName < b.agendaName) return -1;
-      if (a.agendaName > b.agendaName) return 1;
-      return 0;
-    });
-};
-
-const getUniqueMandatees = (mandatees) => {
-  let uniqueMandatees = [];
-  mandatees.map((mandatee) => {
-    const foundMandatee = uniqueMandatees.find(
-      (mandateeToCheck) => mandatee.title === mandateeToCheck.title
-    );
-    if (!foundMandatee) {
-      uniqueMandatees.push(mandatee);
-    }
-  });
-  return uniqueMandatees.sort((a, b) => parseInt(a.priority) - parseInt(b.priority));
-};
-
-const reduceMandateesToUniqueSubcases = (agendaitems) => {
-  return agendaitems.reduce((agendaItems, agendaitem) => {
-    agendaItems[agendaitem.subcaseId] = agendaItems[agendaitem.subcaseId] || {
-      mandatees: [],
-    };
-
-    agendaItems[agendaitem.subcaseId].mandatees.push({
-      title: agendaitem.title,
-      priority: agendaitem.priority,
-    });
-    return agendaItems;
-  }, {});
-};
-
-const reduceAgendaitemsToUniqueAgendas = (agendaitems) => {
-  const subcaseIdsParsed = [];
-  return agendaitems.reduce((agendaItems, agendaitem) => {
-    agendaItems[agendaitem.agendaName] = agendaItems[agendaitem.agendaName] || {
-      items: [],
-      agendaId: agendaitem.agendaId,
-    };
-    if (!subcaseIdsParsed.includes(agendaitem.subcase)) {
-      subcaseIdsParsed.push(agendaitem.subcase);
-      agendaItems[agendaitem.agendaName].items.push(agendaitem);
-    }
-
-    return agendaItems;
-  }, {});
-};
-
-const createAgendaitemGroups = (itemArray) => {
-  const reducedAgendaItemsByTitle = reduceAgendaitemsPerTitle(itemArray[1].items);
-  return Object.entries(reducedAgendaItemsByTitle)
-    .map((entry) => {
-      return {
-        title: entry[0],
-        priority: entry[1].foundPriority,
-        mandatees: entry[1].mandatees,
-        agendaitems: entry[1].agendaitems.sort(
-          (a, b) => parseInt(a.agendaitemPrio) > parseInt(b.agendaitemPrio)
-        ),
-      };
-    })
-    .sort((a, b) => a.priority - b.priority);
-};
-
-const setGroupTitlesAndPriorityOfMandatees = (uniqueMandatees, agendaitem) => {
-  agendaitem['mandatees'] = uniqueMandatees;
-  const titles = uniqueMandatees.map((item) => item.title);
-  agendaitem['groupTitle'] = titles.join(', ');
-  const priorities = uniqueMandatees.map((item) => parseInt(item.priority));
-  let minPriority = Math.min(...priorities);
-
-  // create a priority based on the multiple priorities in the mandatee list
-  if (priorities.length > 1) {
-    priorities.map((priority) => {
-      minPriority += priority / 1000;
-    });
-    agendaitem['groupPriority'] = minPriority;
-  } else {
-    agendaitem['groupPriority'] = minPriority;
-  }
 };
