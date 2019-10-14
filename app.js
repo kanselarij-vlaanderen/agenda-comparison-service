@@ -17,6 +17,14 @@ app.get('/compared-sort', (req, res) => {
   return handleSortRequest(req, res, true, true);
 });
 
+function isDocumentAdded(previousItem, document) {
+  return !previousItem.documents.find(previousDocument => previousDocument.id === document.id);
+}
+function isVersionAdded(previousItem, document) {
+  const previousDocument = previousItem.documents.find(previousDocument => previousDocument.id === document.id);
+  return previousDocument && previousDocument.documentVersions.length < document.documentVersions.length;
+}
+
 app.get('/agenda-with-changes', async (req, res) => {
   const currentAgendaID = req.query.selectedAgenda;
   const previousAgendaId = req.query.agendaToCompare;
@@ -36,17 +44,17 @@ app.get('/agenda-with-changes', async (req, res) => {
 
   reducedCurrentAgendaitems.forEach((currentAgendaItem) => {
     if (!currentAgendaItem) return;
-    const foundItem = reducedPreviousAgendaitems.find(
+    const previousItem = reducedPreviousAgendaitems.find(
       (item) => item.subcaseId == currentAgendaItem.subcaseId
     );
 
-    if (!foundItem) {
+    if (!previousItem) {
       addedAgendaitems.push(currentAgendaItem.id);
-      return;
     }
+    console.log(previousItem)
     currentAgendaItem.documents.forEach((document) => {
-      if (!foundItem.documents.includes(document)) {
-        addedDocuments.push(document);
+      if (!previousItem || isDocumentAdded(previousItem, document) || isVersionAdded(previousItem, document)) {
+        addedDocuments.push(document.id);
       }
     });
   });
@@ -109,11 +117,12 @@ const reduceDocumentsAndDocumentVersions = (agendaitems) => {
     if (!foundItem) {
       agendaitem.allDocumentVersions = [];
       agendaitem.documents = [];
-      if (agendaitem.documentVersions) {
+      if (agendaitem.documentVersions && agendaitem.document) {
         agendaitem.allDocumentVersions.push(agendaitem.documentVersions);
-      }
-      if (agendaitem.document) {
-        agendaitem.documents.push(agendaitem.document);
+        agendaitem.documents.push({
+          id: agendaitem.document,
+          documentVersions: [agendaitem.documentVersions]
+        });
       }
       agendaItems.push(agendaitem);
     } else {
@@ -121,9 +130,16 @@ const reduceDocumentsAndDocumentVersions = (agendaitems) => {
 
       if (agendaitem.documentVersions) {
         agendaItems[foundIndex].allDocumentVersions.push(agendaitem.documentVersions);
-      }
-      if (agendaitem.document) {
-        agendaItems[foundIndex].documents.push(agendaitem.document);
+        const foundDocument = agendaItems[foundIndex].documents.find(document => document.id === agendaitem.document);
+        if (foundDocument) {
+          foundDocument.documentVersions.push(agendaitem.documentVersions)
+        } else {
+          agendaItems[foundIndex].documents.push({
+            id: agendaitem.document,
+            documentVersions: [agendaitem.documentVersions]
+          });
+        }
+
       }
     }
 
