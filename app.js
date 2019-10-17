@@ -51,7 +51,6 @@ app.get('/agenda-with-changes', async (req, res) => {
     if (!previousItem) {
       addedAgendaitems.push(currentAgendaItem.id);
     }
-    console.log(previousItem)
     currentAgendaItem.documents.forEach((document) => {
       if (!previousItem || isDocumentAdded(previousItem, document) || isVersionAdded(previousItem, document)) {
         addedDocuments.push(document.id);
