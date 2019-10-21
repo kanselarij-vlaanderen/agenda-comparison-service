@@ -5,6 +5,7 @@ const app = mu.app;
 const bodyParser = require('body-parser');
 const repository = require('./repository');
 const cors = require('cors');
+const debug = process.env.DEBUG_LOGGING || false;
 
 app.use(bodyParser.json({ type: 'application/*+json' }));
 app.use(cors());
@@ -47,6 +48,12 @@ app.get('/agenda-with-changes', async (req, res) => {
     const previousItem = reducedPreviousAgendaitems.find(
       (item) => item.subcaseId == currentAgendaItem.subcaseId
     );
+    if (debug) {
+      console.debug(
+`###### Comparing: 
+  New: ${JSON.stringify(currentAgendaItem, null, 4)}
+  Old: ${JSON.stringify(previousItem, null, 4)}`);
+    }
 
     if (!previousItem) {
       addedAgendaitems.push(currentAgendaItem.id);
@@ -57,6 +64,13 @@ app.get('/agenda-with-changes', async (req, res) => {
       }
     });
   });
+  if (debug) {
+    console.debug(
+`###### Added: 
+  Documents: ${JSON.stringify(addedDocuments, null, 4)}
+  Agenda items: ${JSON.stringify(addedAgendaitems, null, 4)}`);
+  }
+
   res.send({
     currentAgendaID,
     previousAgendaId,
