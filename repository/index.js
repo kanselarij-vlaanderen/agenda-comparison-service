@@ -199,6 +199,7 @@ const getAllAgendaItemsFromAgendaWithDocuments = async (agendaId) => {
     PREFIX agenda: <http://data.lblod.info/id/agendas/>
     PREFIX mandaat: <http://data.vlaanderen.be/ns/mandaat#>
     PREFIX dct: <http://purl.org/dc/terms/>
+    PREFIX dossier: <https://data.vlaanderen.be/ns/dossier#>
    
     SELECT ?subcaseId ?id ?documentVersions ?document  WHERE { 
        GRAPH <${targetGraph}>
@@ -215,7 +216,7 @@ const getAllAgendaItemsFromAgendaWithDocuments = async (agendaId) => {
          ?agendaitem   ext:wordtGetoondAlsMededeling ?showAsRemark .
          OPTIONAL { 
             ?agendaitem ext:bevatAgendapuntDocumentversie ?documentVersions .
-            ?document   besluitvorming:heeftVersie ?documentVersions .
+            ?document   dossier:collectie.bestaatUit ?documentVersions .
          }
          FILTER(?showAsRemark ="false"^^<http://mu.semte.ch/vocabularies/typed-literals/boolean>)
         }
