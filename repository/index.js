@@ -206,7 +206,6 @@ const getAllAgendaItemsFromAgendaWithDocuments = async (agendaId) => {
        {
          ?agenda a besluitvorming:Agenda ;
                     mu:uuid "${agendaId}" .
-         ?agenda   ext:agendaNaam ?agendaName .
          ?agenda   dct:hasPart ?agendaitem .
          ?agendaitem mu:uuid ?id .
          OPTIONAL { 
