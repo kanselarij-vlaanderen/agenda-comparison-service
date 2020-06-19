@@ -48,7 +48,7 @@ const getAgendaPriorities = async (agendaId) => {
             FILTER NOT EXISTS{
                 ?agendapunt ext:prioriteit ?agendaitemPrio .
             }
-            ?subcase besluitvorming:isGeagendeerdVia ?agendapunt .
+            ?subcase  ^besluitvorming:vindtPlaatsTijdens / besluitvorming:genereertAgendapunt ?agendapunt .
             ?subcase ext:wordtGetoondAlsMededeling ?showAsRemark .
             FILTER(?showAsRemark ="false"^^<http://mu.semte.ch/vocabularies/typed-literals/boolean>)    
             OPTIONAL { 
@@ -90,7 +90,7 @@ const getAgendaPrioritiesWithoutFilter = async (agendaId) => {
             ?agenda dct:hasPart ?agendapunt .
             ?agenda mu:uuid "${agendaId}" .
             ?agendapunt mu:uuid ?uuid .
-            ?subcase besluitvorming:isGeagendeerdVia ?agendapunt .
+            ?subcase  ^besluitvorming:vindtPlaatsTijdens / besluitvorming:genereertAgendapunt ?agendapunt .
             ?subcase mu:uuid ?subcaseId .
             ?subcase ext:wordtGetoondAlsMededeling ?showAsRemark .
             FILTER(?showAsRemark ="false"^^<http://mu.semte.ch/vocabularies/typed-literals/boolean>)
@@ -209,7 +209,7 @@ const getAllAgendaItemsFromAgendaWithDocuments = async (agendaId) => {
          ?agenda   dct:hasPart ?agendaitem .
          ?agendaitem mu:uuid ?id .
          OPTIONAL { 
-            ?subcase    besluitvorming:isGeagendeerdVia ?agendaitem ;
+            ?subcase  ^besluitvorming:vindtPlaatsTijdens / besluitvorming:genereertAgendapunt ?agendaitem ;
                         mu:uuid ?subcaseId .
          }
          ?agendaitem   ext:wordtGetoondAlsMededeling ?showAsRemark .
