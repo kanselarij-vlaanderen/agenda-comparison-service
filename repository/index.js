@@ -52,7 +52,7 @@ const getAgendaPriorities = async (agendaId) => {
             ?subcase ext:wordtGetoondAlsMededeling ?showAsRemark .
             FILTER(?showAsRemark ="false"^^<http://mu.semte.ch/vocabularies/typed-literals/boolean>)    
             OPTIONAL { 
-                ?subcase besluitvorming:heeftBevoegde ?mandatee . 
+                ?subcase ext:heeftBevoegde ?mandatee . 
                 ?mandatee mu:uuid ?mandateeId .
                 ?mandatee mandaat:rangorde ?priority .
                 ?mandatee mandaat:start ?start .
@@ -96,7 +96,7 @@ const getAgendaPrioritiesWithoutFilter = async (agendaId) => {
             FILTER(?showAsRemark ="false"^^<http://mu.semte.ch/vocabularies/typed-literals/boolean>)
 
             OPTIONAL { 
-                ?subcase besluitvorming:heeftBevoegde ?mandatee . 
+                ?subcase ext:heeftBevoegde ?mandatee . 
                 ?mandatee mu:uuid ?mandateeId .
                 ?mandatee mandaat:rangorde ?priority .
                 ?mandatee mandaat:start ?start .
@@ -214,7 +214,7 @@ const getAllAgendaItemsFromAgendaWithDocuments = async (agendaId) => {
          }
          ?agendaitem   ext:wordtGetoondAlsMededeling ?showAsRemark .
          OPTIONAL { 
-            ?agendaitem ext:bevatAgendapuntDocumentversie ?documentVersions .
+            ?agendaitem besluitvorming:bevatAgendapuntDocumentversie ?documentVersions .
             ?document   dossier:collectie.bestaatUit ?documentVersions .
          }
          FILTER(?showAsRemark ="false"^^<http://mu.semte.ch/vocabularies/typed-literals/boolean>)
