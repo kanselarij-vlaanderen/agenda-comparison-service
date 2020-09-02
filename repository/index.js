@@ -214,7 +214,7 @@ const getAllAgendaItemsFromAgendaWithDocuments = async (agendaId) => {
          }
          ?agendaitem   ext:wordtGetoondAlsMededeling ?showAsRemark .
          OPTIONAL { 
-            ?agendaitem besluitvorming:bevatAgendapuntDocumentversie ?documentVersions .
+            ?agendaitem besluitvorming:geagendeerdStuk ?documentVersions .
             ?document   dossier:collectie.bestaatUit ?documentVersions .
          }
          FILTER(?showAsRemark ="false"^^<http://mu.semte.ch/vocabularies/typed-literals/boolean>)
