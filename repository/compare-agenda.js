@@ -67,7 +67,17 @@ const isDocumentAdded = (previousItem, document) => {
 
 const isVersionAdded = (previousItem, document) => {
   const previousDocument = previousItem.documents.find(previousDocument => previousDocument.id === document.id);
-  return previousDocument && previousDocument.documentVersions.length < document.documentVersions.length;
+
+  if (previousDocument) {
+    for (let i = 0; i < document.documentVersions.length; i++) {
+      const documentVersion = document.documentVersions[i];
+      if (!previousDocument.documentVersions.includes(documentVersion)) {
+        return true;
+      }
+    }
+  }
+
+  return false;
 };
 
 export {
