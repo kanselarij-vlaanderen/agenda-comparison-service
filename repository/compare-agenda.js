@@ -8,17 +8,17 @@ const getAllAgendaItemsFromAgendaWithDocuments = async (agendaId) => {
     PREFIX besluitvorming: <http://data.vlaanderen.be/ns/besluitvorming#>
     PREFIX dct: <http://purl.org/dc/terms/>
     PREFIX dossier: <https://data.vlaanderen.be/ns/dossier#>
-   
-    SELECT ?subcaseId ?id ?documentVersions ?document WHERE { 
+
+    SELECT ?subcaseId ?id ?documentVersions ?document WHERE {
       ?agenda a besluitvorming:Agenda ;
                 mu:uuid ${sparqlEscapeString(agendaId)} .
       ?agenda   dct:hasPart ?agendaitem .
       ?agendaitem mu:uuid ?id .
-      OPTIONAL { 
+      OPTIONAL {
         ?subcase  ^besluitvorming:vindtPlaatsTijdens / besluitvorming:genereertAgendapunt ?agendaitem ;
                     mu:uuid ?subcaseId .
       }
-      OPTIONAL { 
+      OPTIONAL {
         ?agendaitem besluitvorming:geagendeerdStuk ?documentVersions .
         ?document   dossier:collectie.bestaatUit ?documentVersions .
       }
@@ -47,7 +47,7 @@ const reduceDocumentsAndDocumentVersions = (agendaitems) => {
         agendaItems[foundIndex].allDocumentVersions.push(agendaitem.documentVersions);
         const foundDocument = agendaItems[foundIndex].documents.find(document => document.id === agendaitem.document);
         if (foundDocument) {
-          foundDocument.documentVersions.push(agendaitem.documentVersions)
+          foundDocument.documentVersions.push(agendaitem.documentVersions);
         } else {
           agendaItems[foundIndex].documents.push({
             id: agendaitem.document,
@@ -59,6 +59,7 @@ const reduceDocumentsAndDocumentVersions = (agendaitems) => {
     return agendaItems;
   }, []);
 };
+
 
 const isDocumentAdded = (previousItem, document) => {
   return !previousItem.documents.find(previousDocument => previousDocument.id === document.id);
