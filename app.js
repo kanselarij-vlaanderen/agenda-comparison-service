@@ -2,10 +2,33 @@ import { app } from 'mu';
 import bodyParser from 'body-parser';
 
 import * as agendaCompare from './repository/compare-agenda';
+import queryChangedDocumentsForAgendaItem from './repository/changed-agenda-item-documents';
 
 const debug = process.env.DEBUG_LOGGING || false;
 
 app.use(bodyParser.json({ type: 'application/*+json' }));
+
+const JSONAPI_DOCUMENT_TYPE = 'pieces';
+
+app.get('/agendas/:current_agenda_id/compare/:compared_agenda_id/agenda-item/:agenda_item_id/documents', async (req, res) => {
+  const currentAgendaId = req.params.current_agenda_id;
+  const comparedAgendaId = req.params.compared_agenda_id;
+  const agendaItemId = req.params.agenda_item_id;
+  const documents = await queryChangedDocumentsForAgendaItem(currentAgendaId, comparedAgendaId, agendaItemId);
+  const data = documents.map((document) => {
+    return {
+      type: JSONAPI_DOCUMENT_TYPE,
+      uri: document.documentUri,
+      id: document.documentUuid
+    };
+  });
+  if (!data.length) {
+    res.statusCode = 404;
+  }
+  return res.send({
+    data
+  });
+});
 
 app.get('/agenda-with-changes', async (req, res) => {
   const currentAgendaID = req.query.selectedAgenda;
