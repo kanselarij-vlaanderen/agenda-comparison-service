@@ -22,9 +22,6 @@ app.get('/agendas/:current_agenda_id/compare/:compared_agenda_id/agenda-item/:ag
       id: document.documentUuid
     };
   });
-  if (!data.length) {
-    res.statusCode = 404;
-  }
   return res.send({
     data
   });
