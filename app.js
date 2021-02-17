@@ -18,8 +18,10 @@ app.get('/agendas/:current_agenda_id/compare/:compared_agenda_id/agenda-item/:ag
   const data = documents.map((document) => {
     return {
       type: JSONAPI_DOCUMENT_TYPE,
-      uri: document.documentUri,
-      id: document.documentUuid
+      id: document.documentUuid,
+      attributes: {
+        uri: document.documentUri
+      }
     };
   });
   return res.send({
