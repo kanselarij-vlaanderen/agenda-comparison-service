@@ -2,7 +2,7 @@ import { app } from 'mu';
 import bodyParser from 'body-parser';
 
 import * as agendaCompare from './repository/compare-agenda';
-import queryChangedDocumentsForAgendaItem from './repository/changed-agenda-item-documents';
+import queryNewDocumentsForAgendaItem from './repository/new-agenda-item-documents';
 
 const debug = process.env.DEBUG_LOGGING || false;
 
@@ -14,7 +14,7 @@ app.get('/agendas/:current_agenda_id/compare/:compared_agenda_id/agenda-item/:ag
   const currentAgendaId = req.params.current_agenda_id;
   const comparedAgendaId = req.params.compared_agenda_id;
   const agendaItemId = req.params.agenda_item_id;
-  const documents = await queryChangedDocumentsForAgendaItem(currentAgendaId, comparedAgendaId, agendaItemId);
+  const documents = await queryNewDocumentsForAgendaItem(currentAgendaId, comparedAgendaId, agendaItemId);
   const data = documents.map((document) => {
     return {
       type: JSONAPI_DOCUMENT_TYPE,

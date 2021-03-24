@@ -1,7 +1,7 @@
 import { query, sparqlEscapeString } from 'mu';
 import * as util from '../util/index';
 
-async function queryChangedDocumentsForAgendaItem (currentAgendaId, comparedAgendaId, agendaItemId) {
+async function queryNewDocumentsForAgendaItem (currentAgendaId, comparedAgendaId, agendaItemId) {
   const queryString = `
 PREFIX besluit: <http://data.vlaanderen.be/ns/besluit#>
 PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
@@ -34,4 +34,4 @@ SELECT DISTINCT (?document AS ?documentUri) ?documentUuid WHERE {
   return util.parseSparqlResults(data);
 }
 
-export default queryChangedDocumentsForAgendaItem;
+export default queryNewDocumentsForAgendaItem;
