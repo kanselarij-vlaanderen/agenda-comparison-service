@@ -2,6 +2,7 @@ import { app } from 'mu';
 import bodyParser from 'body-parser';
 
 import * as agendaCompare from './repository/compare-agenda';
+import queryNewAgendaItemsForAgenda from './repository/new-agenda-items';
 import queryNewDocumentsForAgendaItem from './repository/new-agenda-item-documents';
 
 const debug = process.env.DEBUG_LOGGING || false;
@@ -9,6 +10,25 @@ const debug = process.env.DEBUG_LOGGING || false;
 app.use(bodyParser.json({ type: 'application/*+json' }));
 
 const JSONAPI_DOCUMENT_TYPE = 'pieces';
+const JSONAPI_AGENDA_ITEM_TYPE = 'agendaitems';
+
+app.get('/agendas/:current_agenda_id/compare/:compared_agenda_id/agenda-items', async (req, res) => {
+  const currentAgendaId = req.params.current_agenda_id;
+  const comparedAgendaId = req.params.compared_agenda_id;
+  const agendaItems = await queryNewAgendaItemsForAgenda(currentAgendaId, comparedAgendaId);
+  const data = agendaItems.map((agendaItem) => {
+    return {
+      type: JSONAPI_AGENDA_ITEM_TYPE,
+      id: agendaItem.agendaItemUuid,
+      attributes: {
+        uri: agendaItem.agendaItemUri
+      }
+    };
+  });
+  return res.send({
+    data
+  });
+});
 
 app.get('/agendas/:current_agenda_id/compare/:compared_agenda_id/agenda-item/:agenda_item_id/documents', async (req, res) => {
   const currentAgendaId = req.params.current_agenda_id;
@@ -28,6 +48,7 @@ app.get('/agendas/:current_agenda_id/compare/:compared_agenda_id/agenda-item/:ag
     data
   });
 });
+
 
 app.get('/agenda-with-changes', async (req, res) => {
   const currentAgendaID = req.query.selectedAgenda;
