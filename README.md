@@ -63,7 +63,5 @@ Example response body
 }
 ```
 
-In case of no changed documents a `404` status is returned.
-
 #### GET /agenda-with-changes
 TODO
