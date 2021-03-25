@@ -1,8 +1,9 @@
-import { app } from 'mu';
+import { app, errorHandler } from 'mu';
 import bodyParser from 'body-parser';
 
 import * as agendaCompare from './repository/compare-agenda';
 import queryNewAgendaItemsForAgenda from './repository/new-agenda-items';
+import queryModifiedAgendaItemsForAgenda from './repository/modified-agenda-items';
 import queryNewDocumentsForAgendaItem from './repository/new-agenda-item-documents';
 
 const debug = process.env.DEBUG_LOGGING || false;
@@ -11,11 +12,38 @@ app.use(bodyParser.json({ type: 'application/*+json' }));
 
 const JSONAPI_DOCUMENT_TYPE = 'pieces';
 const JSONAPI_AGENDA_ITEM_TYPE = 'agendaitems';
+const JSONAPI_AGENDA_ITEM_FIELD_PREDICATE_MAP = {
+  documents: 'http://data.vlaanderen.be/ns/besluitvorming#geagendeerdStuk'
+};
 
 app.get('/agendas/:current_agenda_id/compare/:compared_agenda_id/agenda-items', async (req, res) => {
   const currentAgendaId = req.params.current_agenda_id;
   const comparedAgendaId = req.params.compared_agenda_id;
-  const agendaItems = await queryNewAgendaItemsForAgenda(currentAgendaId, comparedAgendaId);
+  const changeset = req.query.changeset;
+  let agendaItems;
+  if (!changeset || changeset === 'new') {
+    agendaItems = await queryNewAgendaItemsForAgenda(currentAgendaId, comparedAgendaId);
+  } else if (changeset === 'modified') {
+    const scope = req.query.scope;
+    const predicates = [];
+    if (scope.length) {
+      const scopes = scope.split(',');
+      for (const scope of scopes) {
+        if (JSONAPI_AGENDA_ITEM_FIELD_PREDICATE_MAP[scope]) {
+          predicates.push(JSONAPI_AGENDA_ITEM_FIELD_PREDICATE_MAP[scope]);
+        } else {
+          console.warn(`No predicate available for scope ${scope}. Ignoring ...`);
+        }
+      }
+    }
+    if (predicates.lenth) {
+      agendaItems = await queryModifiedAgendaItemsForAgenda(currentAgendaId, comparedAgendaId, predicates);
+    } else {
+      throw new Error('No known modification-scopes were provided. You should provide at least 1 known scope when using "modified".');
+    }
+  } else {
+    throw new Error(`Changeset type "${changeset}" currently isn't supported`);
+  }
   const data = agendaItems.map((agendaItem) => {
     return {
       type: JSONAPI_AGENDA_ITEM_TYPE,
@@ -102,3 +130,5 @@ app.get('/agenda-with-changes', async (req, res) => {
     addedAgendaitems,
   });
 });
+
+app.use(errorHandler);

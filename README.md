@@ -16,7 +16,11 @@ document-versions:
 #### GET /agendas/:current_agenda_id/compare/:compared_agenda_id/agenda-items
 Fetch all agenda-items that are *different* between the `current_agenda_id`- and `compared_agenda_id`-version of the agenda.  
 
-By default, "different" is interpreted as "new". In other words: by default, without options, this endpoint will return all agenda-items that are new on the `current_agenda_id`-agenda compared to the `compared_agenda_id`-agenda.
+By default, "different" is interpreted as `changeset=new`. In other words: by default, without options, this endpoint will return all agenda-items that are new on the `current_agenda_id`-agenda compared to the `compared_agenda_id`-agenda.
+
+Query parameters:
+- `changeset`: `new` is the default. Only returns new items. `modified` returns items which already existed on the compared agenda, but have been modified with respect to the current agenda (see `scope`-param).
+- `scope`: specify which JSONAPI-fields should be taken into account when determining if an item has been "modified".
 
 Example response body
 
