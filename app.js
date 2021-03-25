@@ -36,7 +36,7 @@ app.get('/agendas/:current_agenda_id/compare/:compared_agenda_id/agenda-items', 
         }
       }
     }
-    if (predicates.lenth) {
+    if (predicates.length) {
       agendaItems = await queryModifiedAgendaItemsForAgenda(currentAgendaId, comparedAgendaId, predicates);
     } else {
       throw new Error('No known modification-scopes were provided. You should provide at least 1 known scope when using "modified".');
