@@ -77,7 +77,6 @@ app.get('/agendas/:current_agenda_id/compare/:compared_agenda_id/agenda-item/:ag
   });
 });
 
-
 app.get('/agenda-with-changes', async (req, res) => {
   const currentAgendaID = req.query.selectedAgenda;
   const previousAgendaId = req.query.agendaToCompare;
