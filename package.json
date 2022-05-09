@@ -1,5 +1,5 @@
 {
-  "name": "agenda-sort-service",
+  "name": "agenda-comparison-service",
   "version": "2.3.0",
   "description": "",
   "main": "app.js",
@@ -15,5 +15,5 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "ISC"
+  "license": "MIT"
 }
