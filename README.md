@@ -64,4 +64,13 @@ Example response body
 ```
 
 #### GET /agenda-with-changes
-TODO
+Fetch all documents and agenda-items that have been added between 2 agendas
+
+Example response body
+
+```json
+{
+  "addedDocuments": [ "49c53852-c108-43f6-8f14-936795684878", "49c54702-c108-43f6-bbfb-933486741899" ],
+  "addedAgendaitems": [ "49c53852-c108-43f6-8f14-936795684878", "49c54702-c108-43f6-bbfb-933486741899" ]
+}
+```
