@@ -1,4 +1,3 @@
-
 const parseSparqlResults = (data) => {
   const vars = data.head.vars;
   return data.results.bindings.map(binding => {
@@ -9,7 +8,7 @@ const parseSparqlResults = (data) => {
       }
     });
     return obj;
-  })
+  });
 };
 
 export {
