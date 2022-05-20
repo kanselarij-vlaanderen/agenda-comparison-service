@@ -76,13 +76,13 @@ trigger:
 ---
 kind: secret
 name: docker_username
-data: Iqgw+9EJp31DccNoOVKyx0Smm6kt0uUVsSxbB3C8XcceK5yiqrOF6Tyj3+ZQ
+data: pIEB9URGJX9Cab/qLApxb002k3m8pS6jKjloXxCDlphrOfHgKNBF0ii4q0Lx
 ---
 kind: secret
 name: docker_password
-data: biOVpc8v8kYRWGiEnOBNEbF5IAx0EuPlIRizMLgeBGLj8swCR2N/xS2uHV+ger9SkmHNgJt6MPpQ82LLXyD63A==
+data: zGMAc8mqMuuBnO+TvhZJiyPcf4OhEHc1MtHsX6deRUkosnshBbcE5FOX+tQeK6n7vQxAYqNemLmhXxtatkILWw==
 ---
 kind: signature
-hmac: b75242011593fd2af13c0cc723e8a14fd4b0bafb8f038e0d59bb549f66181b74
+hmac: e81ee1a45cdf05f4ebcb2366b74edf9160ee1eaabfed026f90cff7f40cd68465
 
 ...
