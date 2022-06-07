@@ -1,6 +1,6 @@
 {
   "name": "agenda-comparison-service",
-  "version": "2.3.0",
+  "version": "3.0.0",
   "description": "Microservice providing endpoints to compare agendas and related resources",
   "repository": {
     "type": "git",
