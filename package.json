@@ -1,19 +1,14 @@
 {
-  "name": "agenda-sort-service",
+  "name": "agenda-comparison-service",
   "version": "2.3.0",
-  "description": "",
-  "main": "app.js",
+  "description": "Microservice providing endpoints to compare agendas and related resources",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kanselarij-vlaanderen/agenda-comparison-service.git"
+  },
+  "author": "redpencil.io",
+  "license": "MIT",
   "dependencies": {
-    "body-parser": "^1.18.3",
-    "express": "^4.16.4",
-    "moment": "^2.23.0",
-    "cors": "^2.8.5",
-    "node-fetch": "^2.6.1"
-  },
-  "devDependencies": {},
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
-  "license": "ISC"
+
+  }
 }

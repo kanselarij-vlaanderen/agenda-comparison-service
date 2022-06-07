@@ -1,4 +1,4 @@
-# agenda-sort-service
+# agenda-comparison-service
 
 Microservice providing capabilities for comparing various agenda-related entities across different versions of a given agenda.
 
@@ -8,13 +8,13 @@ Add the following snippet to your `docker-compose.yml`:
 
 ```yml
 document-versions:
-  image: kanselarij/agenda-sort-service
+  image: kanselarij/agenda-comparison-service
 ```
 
 ## Reference
 ### API
 #### GET /agendas/:current_agenda_id/compare/:compared_agenda_id/agenda-items
-Fetch all agenda-items that are *different* between the `current_agenda_id`- and `compared_agenda_id`-version of the agenda.  
+Fetch all agenda-items that are *different* between the `current_agenda_id`- and `compared_agenda_id`-version of the agenda.
 
 By default, "different" is interpreted as `changeset=new`. In other words: by default, without options, this endpoint will return all agenda-items that are new on the `current_agenda_id`-agenda compared to the `compared_agenda_id`-agenda.
 
@@ -64,4 +64,13 @@ Example response body
 ```
 
 #### GET /agenda-with-changes
-TODO
+Fetch all documents and agenda-items that have been added between 2 agendas
+
+Example response body
+
+```json
+{
+  "addedDocuments": [ "49c53852-c108-43f6-8f14-936795684878", "49c54702-c108-43f6-bbfb-933486741899" ],
+  "addedAgendaitems": [ "49c53852-c108-43f6-8f14-936795684878", "49c54702-c108-43f6-bbfb-933486741899" ]
+}
+```

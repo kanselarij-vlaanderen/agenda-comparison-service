@@ -1,2 +1,2 @@
-FROM semtech/mu-javascript-template
-MAINTAINER Aad Versteden <madnificent@gmail.com>
+FROM semtech/mu-javascript-template:1.6.0
+LABEL maintainer="info@redpencil.io"
