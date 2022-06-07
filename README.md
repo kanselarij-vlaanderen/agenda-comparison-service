@@ -7,7 +7,7 @@ Microservice providing capabilities for comparing various agenda-related entitie
 Add the following snippet to your `docker-compose.yml`:
 
 ```yml
-document-versions:
+agenda-comparison:
   image: kanselarij/agenda-comparison-service
 ```
 
