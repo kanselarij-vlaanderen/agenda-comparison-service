@@ -20,7 +20,7 @@ const getAllAgendaItemsFromAgendaWithDocuments = async (agendaId) => {
       }
       OPTIONAL {
         ?agendaitem besluitvorming:geagendeerdStuk ?documentVersions .
-        ?document   dossier:collectie.bestaatUit ?documentVersions .
+        ?document   dossier:Collectie.bestaatUit ?documentVersions .
       }
     }`;
   const data = await mu.query(query);
