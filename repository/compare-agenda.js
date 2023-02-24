@@ -5,7 +5,7 @@ const getAllAgendaItemsFromAgendaWithDocuments = async (agendaId) => {
   const query = `
     PREFIX besluit: <http://data.vlaanderen.be/ns/besluit#>
     PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
-    PREFIX besluitvorming: <http://data.vlaanderen.be/ns/besluitvorming#>
+    PREFIX besluitvorming: <https://data.vlaanderen.be/ns/besluitvorming#>
     PREFIX dct: <http://purl.org/dc/terms/>
     PREFIX dossier: <https://data.vlaanderen.be/ns/dossier#>
 

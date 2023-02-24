@@ -5,7 +5,7 @@ async function queryNewDocumentsForAgendaItem (currentAgendaId, comparedAgendaId
   const queryString = `
 PREFIX besluit: <http://data.vlaanderen.be/ns/besluit#>
 PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
-PREFIX besluitvorming: <http://data.vlaanderen.be/ns/besluitvorming#>
+PREFIX besluitvorming: <https://data.vlaanderen.be/ns/besluitvorming#>
 PREFIX dct: <http://purl.org/dc/terms/>
 PREFIX dossier: <https://data.vlaanderen.be/ns/dossier#>
 PREFIX prov: <http://www.w3.org/ns/prov#>
