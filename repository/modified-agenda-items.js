@@ -32,7 +32,7 @@ async function queryModifiedgendaItemsForAgenda (currentAgendaId, comparedAgenda
   });
   const queryString = `
 PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
-PREFIX besluitvorming: <http://data.vlaanderen.be/ns/besluitvorming#>
+PREFIX besluitvorming: <https://data.vlaanderen.be/ns/besluitvorming#>
 PREFIX dct: <http://purl.org/dc/terms/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 

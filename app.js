@@ -13,7 +13,7 @@ app.use(bodyParser.json({ type: 'application/*+json' }));
 const JSONAPI_DOCUMENT_TYPE = 'pieces';
 const JSONAPI_AGENDA_ITEM_TYPE = 'agendaitems';
 const JSONAPI_AGENDA_ITEM_FIELD_PREDICATE_MAP = {
-  documents: 'http://data.vlaanderen.be/ns/besluitvorming#geagendeerdStuk'
+  documents: 'https://data.vlaanderen.be/ns/besluitvorming#geagendeerdStuk'
 };
 
 app.get('/agendas/:current_agenda_id/compare/:compared_agenda_id/agenda-items', async (req, res) => {
